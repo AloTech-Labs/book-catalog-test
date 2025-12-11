@@ -1,5 +1,3 @@
-"""SQLAlchemy ORM models for the book catalog."""
-
 from datetime import date
 from sqlalchemy import Column, Integer, String, Date, Text, ForeignKey, Table
 from sqlalchemy.orm import relationship

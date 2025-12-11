@@ -2,7 +2,6 @@ from datetime import date
 from typing import Optional
 from pydantic import BaseModel, ConfigDict
 
-
 # ============== Author Schemas ==============
 class AuthorBase(BaseModel):
     """Base author schema."""

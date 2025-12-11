@@ -1,5 +1,3 @@
-"""Seed data for initial database population."""
-
 from datetime import date
 from sqlalchemy.orm import Session
 

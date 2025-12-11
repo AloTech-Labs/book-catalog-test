@@ -2,7 +2,7 @@
 
 A complete web application for managing a catalog of books, built with React (frontend) and Python/FastAPI (backend).
 
-## 📖 Overview
+## Overview
 
 This application allows users to:
 - Browse and manage authors
@@ -10,7 +10,7 @@ This application allows users to:
 - Assign multiple authors to books
 - Categorize books by genre and publisher
 
-## 🏗️ Project Structure
+##  Project Structure
 
 ```
 python task/
@@ -37,7 +37,7 @@ python task/
 └── README.md                 # This file
 ```
 
-## 🔧 Tech Stack
+## Tech Stack
 
 ### Backend
 - **Python 3.10+**
@@ -52,7 +52,7 @@ python task/
 - **Vite** - Build tool
 - **CSS3** - Styling
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### 1. Start the Backend
 
@@ -93,13 +93,13 @@ npm run dev
 
 Frontend will be running at: http://localhost:3000
 
-## 📚 API Documentation
+##  API Documentation
 
 When the backend is running, visit:
 - **Swagger UI**: http://localhost:8080/docs
 - **ReDoc**: http://localhost:8080/redoc
 
-## 🔌 API Endpoints
+## API Endpoints
 
 | Endpoint | Methods | Description |
 |----------|---------|-------------|
@@ -112,7 +112,7 @@ When the backend is running, visit:
 | `/publishers` | GET, POST | List/create publishers |
 | `/publishers/{id}` | GET, PUT, DELETE | Get/update/delete publisher |
 
-## 📦 Data Models
+##  Data Models
 
 ### Author
 - `name` (string): First name
@@ -137,7 +137,7 @@ When the backend is running, visit:
 - `name` (string): Genre name
 - `description` (string, optional): Description
 
-## 🎨 Features
+## Features
 
 ### Frontend Features
 - ✅ Author navigation sidebar
@@ -157,14 +157,14 @@ When the backend is running, visit:
 - ✅ Cascade delete protection
 - ✅ Auto-seeding sample data
 
-## ⚠️ Business Rules
+## Business Rules
 
 1. **Authors cannot be deleted** if they have associated books
 2. **Publishers and genres** are managed as read-only in the frontend (simulating admin-only access)
 3. **Books can have multiple authors** (many-to-many relationship)
 4. **Author list can be empty** for a book
 
-## 🧪 Testing
+## Testing
 
 ### Backend Testing
 ```bash
@@ -181,7 +181,7 @@ curl http://localhost:8080/books
 2. Click on authors to view their books
 3. Use Add/Edit/Delete buttons to test CRUD operations
 
-## 📝 Sample Data
+## ample Data
 
 The application comes pre-seeded with:
 - **5 Authors**: George Orwell, Jane Austen, Ernest Hemingway, Virginia Woolf, Gabriel García Márquez
@@ -189,6 +189,3 @@ The application comes pre-seeded with:
 - **10 Genres**: Fiction, Non-Fiction, Science Fiction, Fantasy, Mystery, Romance, Thriller, Biography, History, Self-Help
 - **5 Publishers**: Penguin Random House, HarperCollins, Simon & Schuster, Macmillan Publishers, Hachette Book Group
 
-## 📄 License
-
-This project is created for educational purposes.

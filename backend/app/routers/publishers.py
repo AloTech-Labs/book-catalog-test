@@ -1,89 +1,96 @@
-"""Publisher router with CRUD operations."""
+"""Publisher API endpoints.
 
-from typing import Optional
-from fastapi import APIRouter, Depends, HTTPException, Query
+This module defines thin REST API endpoints for Publisher operations.
+Business logic is delegated to the PublisherService.
+"""
+
+from typing import List
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from sqlalchemy import asc, desc
 
 from ..database import get_db
-from ..models import Publisher
-from ..schemas import (
-    PublisherCreate,
-    PublisherUpdate,
-    PublisherSummary,
-    PublisherResponse,
-)
+from ..schemas import PublisherCreate, PublisherUpdate, PublisherSummary, PublisherResponse
+from ..services import PublisherService
+
 
 router = APIRouter(prefix="/publishers", tags=["Publishers"])
 
 
-@router.get("", response_model=list[PublisherSummary])
-def get_publishers(
-    db: Session = Depends(get_db),
-    name: Optional[str] = Query(None, description="Filter by name"),
-    sort_by: Optional[str] = Query("name", description="Sort field"),
-    order: Optional[str] = Query("asc", description="Sort order: asc or desc"),
-):
-    """Get list of all publishers with optional filtering and sorting."""
-    query = db.query(Publisher)
+def get_publisher_service(db: Session = Depends(get_db)) -> PublisherService:
+    """Dependency injection for PublisherService."""
+    return PublisherService(db)
 
-    # Apply filters
-    if name:
-        query = query.filter(Publisher.name.ilike(f"%{name}%"))
 
-    # Apply sorting
-    sort_column = getattr(Publisher, sort_by, Publisher.name)
-    if order == "desc":
-        query = query.order_by(desc(sort_column))
-    else:
-        query = query.order_by(asc(sort_column))
-
-    return query.all()
+@router.get("", response_model=List[PublisherSummary])
+def get_publishers(service: PublisherService = Depends(get_publisher_service)):
+    """Get list of all publishers sorted by name.
+    
+    Returns a list of all publishers with summary information.
+    """
+    return service.get_all_publishers()
 
 
 @router.post("", response_model=PublisherResponse, status_code=201)
-def create_publisher(publisher: PublisherCreate, db: Session = Depends(get_db)):
-    """Create a new publisher."""
-    db_publisher = Publisher(**publisher.model_dump())
-    db.add(db_publisher)
-    db.commit()
-    db.refresh(db_publisher)
-    return db_publisher
+def create_publisher(
+    publisher: PublisherCreate,
+    service: PublisherService = Depends(get_publisher_service)
+):
+    """Create a new publisher.
+    
+    Args:
+        publisher: The publisher data to create.
+        
+    Returns:
+        The newly created publisher.
+    """
+    return service.create_publisher(publisher)
 
 
 @router.get("/{publisher_id}", response_model=PublisherResponse)
-def get_publisher(publisher_id: int, db: Session = Depends(get_db)):
-    """Get a specific publisher by ID."""
-    publisher = db.query(Publisher).filter(Publisher.id == publisher_id).first()
-    if not publisher:
-        raise HTTPException(status_code=404, detail="Publisher not found")
-    return publisher
+def get_publisher(
+    publisher_id: int,
+    service: PublisherService = Depends(get_publisher_service)
+):
+    """Get a specific publisher by ID.
+    
+    Args:
+        publisher_id: The publisher's primary key.
+        
+    Returns:
+        The publisher details.
+    """
+    return service.get_publisher_by_id(publisher_id)
 
 
 @router.put("/{publisher_id}", response_model=PublisherResponse)
 def update_publisher(
-    publisher_id: int, publisher: PublisherUpdate, db: Session = Depends(get_db)
+    publisher_id: int,
+    publisher: PublisherUpdate,
+    service: PublisherService = Depends(get_publisher_service)
 ):
-    """Update an existing publisher."""
-    db_publisher = db.query(Publisher).filter(Publisher.id == publisher_id).first()
-    if not db_publisher:
-        raise HTTPException(status_code=404, detail="Publisher not found")
-
-    for key, value in publisher.model_dump().items():
-        setattr(db_publisher, key, value)
-
-    db.commit()
-    db.refresh(db_publisher)
-    return db_publisher
+    """Update an existing publisher.
+    
+    Args:
+        publisher_id: The publisher's primary key.
+        publisher: The updated publisher data.
+        
+    Returns:
+        The updated publisher.
+    """
+    return service.update_publisher(publisher_id, publisher)
 
 
 @router.delete("/{publisher_id}", status_code=204)
-def delete_publisher(publisher_id: int, db: Session = Depends(get_db)):
-    """Delete a publisher."""
-    db_publisher = db.query(Publisher).filter(Publisher.id == publisher_id).first()
-    if not db_publisher:
-        raise HTTPException(status_code=404, detail="Publisher not found")
-
-    db.delete(db_publisher)
-    db.commit()
+def delete_publisher(
+    publisher_id: int,
+    service: PublisherService = Depends(get_publisher_service)
+):
+    """Delete a publisher.
+    
+    Fails if the publisher has associated books.
+    
+    Args:
+        publisher_id: The publisher's primary key.
+    """
+    service.delete_publisher(publisher_id)
     return None

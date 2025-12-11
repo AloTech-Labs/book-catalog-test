@@ -2,7 +2,7 @@
 
 A React-based web application for managing a catalog of books and authors. Built with TypeScript, Vite, and modern React practices.
 
-## 🏗️ Architecture
+##  Architecture
 
 The frontend follows a component-based architecture:
 
@@ -26,12 +26,12 @@ frontend/
 └── vite.config.ts            # Vite configuration
 ```
 
-## 📋 Prerequisites
+##  Prerequisites
 
 - Node.js 18.x or higher
 - npm or yarn
 
-## 🚀 Installation
+## Installation
 
 1. Navigate to the frontend directory:
    ```bash
@@ -43,7 +43,7 @@ frontend/
    npm install
    ```
 
-## ▶️ Running the Application
+## Running the Application
 
 Start the development server:
 
@@ -55,7 +55,7 @@ The application will be available at `http://localhost:3000`
 
 **Note**: Make sure the backend API is running at `http://localhost:8080` before starting the frontend.
 
-## 🔧 Available Scripts
+##  Available Scripts
 
 | Script | Description |
 |--------|-------------|
@@ -64,7 +64,7 @@ The application will be available at `http://localhost:3000`
 | `npm run preview` | Preview production build |
 | `npm run lint` | Run ESLint |
 
-## 📱 Features
+##  Features
 
 ### Author Management
 - View list of all authors in the sidebar
@@ -93,7 +93,7 @@ The application will be available at `http://localhost:3000`
 - Confirmation dialogs for delete operations
 - Error handling with user-friendly messages
 
-## 🎨 UI Layout
+##  UI Layout
 
 ```
 ┌─────────────────────────────────────────────────────┐
@@ -111,7 +111,7 @@ The application will be available at `http://localhost:3000`
 └─────────────────────────────────────────────────────┘
 ```
 
-## 🔌 API Integration
+##  API Integration
 
 The frontend communicates with the backend API at `http://localhost:8080`. The API service (`api.ts`) provides typed functions for:
 
@@ -120,7 +120,7 @@ The frontend communicates with the backend API at `http://localhost:8080`. The A
 - `publisherApi`: Read operations for publishers
 - `genreApi`: Read operations for genres
 
-## 🧩 Components
+## Components
 
 ### Sidebar
 Displays the list of authors with:
@@ -150,7 +150,7 @@ Form for creating/editing books:
 - Genre dropdown
 - Author checkboxes (multiple selection)
 
-## 🎯 Type Safety
+## Type Safety
 
 The application uses TypeScript with strict mode enabled. All data models are typed:
 
@@ -161,14 +161,14 @@ The application uses TypeScript with strict mode enabled. All data models are ty
 - `AuthorFormData`
 - `BookFormData`
 
-## 🧪 Testing
+## Testing
 
 Manual testing can be performed by:
 1. Starting the backend server
 2. Starting the frontend development server
 3. Testing all CRUD operations through the UI
 
-## 🔒 Notes
+##  Notes
 
 - Publishers and genres are read-only in the UI (managed via backend)
 - Authors cannot be deleted if they have associated books

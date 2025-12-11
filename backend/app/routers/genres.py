@@ -1,82 +1,96 @@
-"""Genre router with CRUD operations."""
+"""Genre API endpoints.
 
-from typing import Optional
-from fastapi import APIRouter, Depends, HTTPException, Query
+This module defines thin REST API endpoints for Genre operations.
+Business logic is delegated to the GenreService.
+"""
+
+from typing import List
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from sqlalchemy import asc, desc
 
 from ..database import get_db
-from ..models import Genre
 from ..schemas import GenreCreate, GenreUpdate, GenreSummary, GenreResponse
+from ..services import GenreService
+
 
 router = APIRouter(prefix="/genres", tags=["Genres"])
 
 
-@router.get("", response_model=list[GenreSummary])
-def get_genres(
-    db: Session = Depends(get_db),
-    name: Optional[str] = Query(None, description="Filter by name"),
-    sort_by: Optional[str] = Query("name", description="Sort field"),
-    order: Optional[str] = Query("asc", description="Sort order: asc or desc"),
-):
-    """Get list of all genres with optional filtering and sorting."""
-    query = db.query(Genre)
+def get_genre_service(db: Session = Depends(get_db)) -> GenreService:
+    """Dependency injection for GenreService."""
+    return GenreService(db)
 
-    # Apply filters
-    if name:
-        query = query.filter(Genre.name.ilike(f"%{name}%"))
 
-    # Apply sorting
-    sort_column = getattr(Genre, sort_by, Genre.name)
-    if order == "desc":
-        query = query.order_by(desc(sort_column))
-    else:
-        query = query.order_by(asc(sort_column))
-
-    return query.all()
+@router.get("", response_model=List[GenreSummary])
+def get_genres(service: GenreService = Depends(get_genre_service)):
+    """Get list of all genres sorted by name.
+    
+    Returns a list of all genres with summary information.
+    """
+    return service.get_all_genres()
 
 
 @router.post("", response_model=GenreResponse, status_code=201)
-def create_genre(genre: GenreCreate, db: Session = Depends(get_db)):
-    """Create a new genre."""
-    db_genre = Genre(**genre.model_dump())
-    db.add(db_genre)
-    db.commit()
-    db.refresh(db_genre)
-    return db_genre
+def create_genre(
+    genre: GenreCreate,
+    service: GenreService = Depends(get_genre_service)
+):
+    """Create a new genre.
+    
+    Args:
+        genre: The genre data to create.
+        
+    Returns:
+        The newly created genre.
+    """
+    return service.create_genre(genre)
 
 
 @router.get("/{genre_id}", response_model=GenreResponse)
-def get_genre(genre_id: int, db: Session = Depends(get_db)):
-    """Get a specific genre by ID."""
-    genre = db.query(Genre).filter(Genre.id == genre_id).first()
-    if not genre:
-        raise HTTPException(status_code=404, detail="Genre not found")
-    return genre
+def get_genre(
+    genre_id: int,
+    service: GenreService = Depends(get_genre_service)
+):
+    """Get a specific genre by ID.
+    
+    Args:
+        genre_id: The genre's primary key.
+        
+    Returns:
+        The genre details.
+    """
+    return service.get_genre_by_id(genre_id)
 
 
 @router.put("/{genre_id}", response_model=GenreResponse)
-def update_genre(genre_id: int, genre: GenreUpdate, db: Session = Depends(get_db)):
-    """Update an existing genre."""
-    db_genre = db.query(Genre).filter(Genre.id == genre_id).first()
-    if not db_genre:
-        raise HTTPException(status_code=404, detail="Genre not found")
-
-    for key, value in genre.model_dump().items():
-        setattr(db_genre, key, value)
-
-    db.commit()
-    db.refresh(db_genre)
-    return db_genre
+def update_genre(
+    genre_id: int,
+    genre: GenreUpdate,
+    service: GenreService = Depends(get_genre_service)
+):
+    """Update an existing genre.
+    
+    Args:
+        genre_id: The genre's primary key.
+        genre: The updated genre data.
+        
+    Returns:
+        The updated genre.
+    """
+    return service.update_genre(genre_id, genre)
 
 
 @router.delete("/{genre_id}", status_code=204)
-def delete_genre(genre_id: int, db: Session = Depends(get_db)):
-    """Delete a genre."""
-    db_genre = db.query(Genre).filter(Genre.id == genre_id).first()
-    if not db_genre:
-        raise HTTPException(status_code=404, detail="Genre not found")
-
-    db.delete(db_genre)
-    db.commit()
+def delete_genre(
+    genre_id: int,
+    service: GenreService = Depends(get_genre_service)
+):
+    """Delete a genre.
+    
+    Fails if the genre has associated books.
+    
+    Args:
+        genre_id: The genre's primary key.
+    """
+    service.delete_genre(genre_id)
     return None
