@@ -197,6 +197,5 @@ curl -X DELETE http://localhost:8080/authors/1
 ```
 
 ## Important Notes
-
 - The database is seeded with sample publishers and genres on first run
 - CORS is enabled for frontend development (ports 3000 and 5173)
